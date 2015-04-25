@@ -19,13 +19,13 @@ namespace fusekit{
       lock guard(*this);
       map_t::const_iterator e = _added_dirs.begin();
       while( e != _added_dirs.end() ){
-	delete e->second;
-	++e;
+        delete e->second;
+        ++e;
       }
       e = _created_dirs.begin();
       while( e != _created_dirs.end() ){
-	delete e->second;
-	++e;
+        delete e->second;
+        ++e;
       }
     }
 
@@ -33,11 +33,11 @@ namespace fusekit{
       lock guard(*this);
       map_t::const_iterator e = _added_dirs.find( name );
       if( e != _added_dirs.end() ) {
-  	return e->second;
+        return e->second;
       }
       e = _created_dirs.find( name );
       if( e != _created_dirs.end() ) {
-  	return e->second;
+        return e->second;
       }
       return 0;
     }
@@ -48,7 +48,7 @@ namespace fusekit{
       const map_t::key_type key( name );
       map_t::iterator e = _added_dirs.find( name );
       if( e != _added_dirs.end() ) {
-    	delete e->second;
+        delete e->second;
       }
       _added_dirs[ name ] = child;
       return *child;
@@ -64,13 +64,13 @@ namespace fusekit{
       name_container_t names;
       map_t::const_iterator i = _added_dirs.begin();
       while( i != _added_dirs.end() ) {
-	names.insert( i->first.c_str() );
-	++i;
+        names.insert( i->first.c_str() );
+        ++i;
       }
       i = _created_dirs.begin();
       while( i != _created_dirs.end() ) {
-	names.insert( i->first.c_str() );
-	++i;
+        names.insert( i->first.c_str() );
+        ++i;
       }
       return names;
     }
@@ -78,16 +78,16 @@ namespace fusekit{
     int create( const char* name, mode_t mode ){
       lock guard(*this);
       if( find( name ) ){
-	return -EEXIST;
+        return -EEXIST;
       }
       entry* d = _creator();
       if( !d ){
-	return -EROFS;
+        return -EROFS;
       }
       int chmod_err = d->chmod( mode );
       if( chmod_err ){
-	delete d;
-	return chmod_err;
+        delete d;
+        return chmod_err;
       }
       _created_dirs[name] = d;
       return 0;
@@ -98,20 +98,20 @@ namespace fusekit{
       entry* ep = 0;
       map_t::const_iterator e = _added_dirs.find( name );
       if( e != _added_dirs.end() ) {
-  	ep = e->second;
-	_added_dirs.erase(e);
+        ep = e->second;
+        _added_dirs.erase(e);
       }
       else if( (e = _created_dirs.find( name )) != _created_dirs.end() ){
-	ep = e->second;
-	_created_dirs.erase(e);
+        ep = e->second;
+        _created_dirs.erase(e);
       }
       
       if( ep ){
-	delete ep;
-	return 0;
+        delete ep;
+        return 0;
       }
       else{
-	return -ENOENT;
+        return -ENOENT;
       }
     }
   private:

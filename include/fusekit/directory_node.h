@@ -23,7 +23,7 @@ namespace fusekit{
     entry* find( const char* name ) {
       entry* e = directory_factory().find(name);
       if( !e ) {
-	e = file_factory().find(name);
+        e = file_factory().find(name);
       }
       return e;
     }
@@ -39,14 +39,14 @@ namespace fusekit{
       name_container_t names( file_factory().names() );
       name_container_t::const_iterator i = names.begin();
       while( i != names.end() ) {
-	filler( buf, *i, NULL, offset );
-	++i;
+        filler( buf, *i, NULL, offset );
+        ++i;
       }
       names = directory_factory().names();
       i = names.begin();
       while( i != names.end() ) {
-	filler( buf, *i, NULL, offset );
-	++i;
+        filler( buf, *i, NULL, offset );
+        ++i;
       }
       return 0;
     }
@@ -54,7 +54,7 @@ namespace fusekit{
     int mknod( const char* name, mode_t mode, dev_t type){
       const int err = file_factory().create(name,mode,type);
       if( err == 0 ){
-	update_change_and_modification_time();
+        update_change_and_modification_time();
       }
       return err;
     }
@@ -62,7 +62,7 @@ namespace fusekit{
     int unlink( const char* name ){
       const int err = file_factory().destroy(name);
       if( err == 0 ){
-	update_change_and_modification_time();
+        update_change_and_modification_time();
       }
       return err;
     }
@@ -70,7 +70,7 @@ namespace fusekit{
     int mkdir( const char* name, mode_t mode ){
       const int err = directory_factory().create(name,mode);
       if( err == 0 ){
-	update_change_and_modification_time();
+        update_change_and_modification_time();
       }
       return err;
     }
@@ -78,7 +78,7 @@ namespace fusekit{
     int rmdir( const char* name ){
       const int err = directory_factory().destroy(name);
       if( err == 0 ){
-	update_change_and_modification_time();
+        update_change_and_modification_time();
       }
       return err;
     }
