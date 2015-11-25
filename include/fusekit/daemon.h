@@ -31,8 +31,7 @@ namespace fusekit{
   /// entry, which will actually handle the job. in addition the daemon itself 
   /// contains the root element of the filesystem. in most cases this element will
   /// model some kind of directory. 
-  template<
-    class CDtor,
+  template< 
     class Root = typename fusekit::default_directory<>::type, 
     class LockingPolicy = fusekit::no_lock 
     >
@@ -60,15 +59,15 @@ namespace fusekit{
     int run( int argc, char* argv[], bool default_options = true ){
       std::vector< char* > argv_vec(argv,argv+argc);
       if( default_options ){
-        update_uid();
-        update_gid();
-        argv_vec.push_back(const_cast< char* >("-s"));
-        argv_vec.push_back(const_cast< char* >("-o"));
-        argv_vec.push_back(const_cast< char* >("default_permissions"));
-        argv_vec.push_back(const_cast< char* >("-o"));
-        argv_vec.push_back(const_cast< char* >(_uid.c_str()));
-        argv_vec.push_back(const_cast< char* >("-o"));
-        argv_vec.push_back(const_cast< char* >(_gid.c_str()));
+	update_uid();
+	update_gid();
+	argv_vec.push_back(const_cast< char* >("-s"));
+	argv_vec.push_back(const_cast< char* >("-o"));
+	argv_vec.push_back(const_cast< char* >("default_permissions"));
+	argv_vec.push_back(const_cast< char* >("-o"));
+	argv_vec.push_back(const_cast< char* >(_uid.c_str()));
+	argv_vec.push_back(const_cast< char* >("-o"));
+	argv_vec.push_back(const_cast< char* >(_gid.c_str()));
       }
 #if FUSE_USE_VERSION > 26
       return fuse_main( argv_vec.size(), &argv_vec[0], &_ops, NULL );
@@ -97,8 +96,6 @@ namespace fusekit{
 #if FUSE_USEERSION > 26
       _ops.access  = daemon::_access;
 #endif
-      _ops.init = daemon::init;
-      _ops.destroy = daemon::destroy;
     }
 
     static int unlink( const char* p ){
@@ -152,9 +149,9 @@ namespace fusekit{
       lock guard(instance());
       int err = instance().find_entry(path).release(*fi);
       if( err == -ENOENT && fi->fh ){
-        // close has been called on a file, which is no more 
-        delete reinterpret_cast< file_handle* >(fi->fh);
-        fi->fh = 0;
+	// close has been called on a file, which is no more 
+	delete reinterpret_cast< file_handle* >(fi->fh);
+	fi->fh = 0;
       }
       return err;
     }
@@ -194,26 +191,18 @@ namespace fusekit{
       return instance().find_entry(path).utime(*buf);
     }
 
-    static void* init(struct fuse_conn_info *conn) {
-      return new CDtor();
-    }
-
-    static void destroy(void* private_data) {
-      delete static_cast<CDtor*>(private_data);
-    }
-
     fusekit::entry& find_entry( const path& pa ){
       if( pa.empty() ) {
-        return this->_root;
+	return this->_root;
       }
       path::const_iterator p = pa.begin();  
       entry* e = &this->_root;
       do {
-        e  = e->child(p->c_str());
-        if( !e ) {
-          static no_entry noent;
-          return noent;
-        }
+	e  = e->child(p->c_str());
+	if( !e ) {
+	  static no_entry noent;
+	  return noent;
+	}
       } while( ++p != pa.end() );
       return *e;
     }   
