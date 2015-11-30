@@ -21,7 +21,7 @@
 #include <fusekit/path.h>
 
 namespace fusekit{
-
+  
   /// daemon singleton which implements the fuse_operations
   /// interface and delegates the file operations to file hierarchy entries.
   ///
@@ -32,7 +32,7 @@ namespace fusekit{
   /// contains the root element of the filesystem. in most cases this element will
   /// model some kind of directory. 
   template<
-    class CDtor,
+    class CDtor = int,
     class Root = typename fusekit::default_directory<>::type, 
     class LockingPolicy = fusekit::no_lock 
     >
@@ -94,11 +94,11 @@ namespace fusekit{
       _ops.rmdir = daemon::rmdir;
       _ops.flush = daemon::flush;
       _ops.utime = daemon::utime;
+      _ops.init = daemon::init;
+      _ops.destroy = daemon::destroy;
 #if FUSE_USEERSION > 26
       _ops.access  = daemon::_access;
 #endif
-      _ops.init = daemon::init;
-      _ops.destroy = daemon::destroy;
     }
 
     static int unlink( const char* p ){
