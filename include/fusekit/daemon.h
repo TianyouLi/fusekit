@@ -152,9 +152,9 @@ namespace fusekit{
       lock guard(instance());
       int err = instance().find_entry(path).release(*fi);
       if( err == -ENOENT && fi->fh ){
-	// close has been called on a file, which is no more 
-	delete reinterpret_cast< file_handle* >(fi->fh);
-	fi->fh = 0;
+        // close has been called on a file, which is no more 
+        delete reinterpret_cast< file_handle* >(fi->fh);
+        fi->fh = 0;
       }
       return err;
     }
@@ -194,18 +194,26 @@ namespace fusekit{
       return instance().find_entry(path).utime(*buf);
     }
 
+    static void* init(struct fuse_conn_info *conn) {
+      return new CDtor();
+    }
+    
+    static void destroy(void* private_data) {
+      delete static_cast<CDtor*>(private_data);
+    }
+    
     fusekit::entry& find_entry( const path& pa ){
       if( pa.empty() ) {
-	return this->_root;
+        return this->_root;
       }
       path::const_iterator p = pa.begin();  
       entry* e = &this->_root;
       do {
-	e  = e->child(p->c_str());
-	if( !e ) {
-	  static no_entry noent;
-	  return noent;
-	}
+        e  = e->child(p->c_str());
+        if( !e ) {
+          static no_entry noent;
+          return noent;
+        }
       } while( ++p != pa.end() );
       return *e;
     }   
